@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.p-checkbox input:checked ~ .p-checkbox-box {
+    background-color: #3b82f6; 
+    border-color: #3b82f6; 
+  }
+  
+  .p-checkbox input:checked ~ .p-checkbox-box::after {
+    background-color: #ffffff; 
+  }
+  
+  .p-checkbox input:not(:checked) ~ .p-checkbox-box {
+    background-color: rgb(206, 206, 206); 
+    border-color: rgb(206, 206, 206); 
+  }
+  
+  .p-checkbox input:not(:checked) ~ .p-checkbox-box::after {
+    background-color: #ffffff; 
+  }
+  

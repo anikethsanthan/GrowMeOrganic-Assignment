@@ -17,10 +17,12 @@ interface Artwork {
 
 function App() {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
-  const [selectedPage, setSelectedPage] = useState(0); // State to track the current page
+  const [selectedPage, setSelectedPage] = useState(0); 
   const [selectedProducts, setSelectedProducts] = useState<Artwork[] | null>(null);
   const [rowClick, setRowClick] = useState<boolean>(true);
-  const [loading, setLoading] = useState<boolean>(false); // State to track loading
+  const [loading, setLoading] = useState<boolean>(false); 
+
+
 
 
   // Fetch data from the API
@@ -42,7 +44,7 @@ function App() {
     } catch (error) {
       console.error("Error fetching artworks:", error);
     }finally {
-      setLoading(false); // Set loading to false after fetching is complete (either success or failure)
+      setLoading(false); 
     }
   };
 
@@ -61,7 +63,7 @@ function App() {
       
 
       {loading ? (
-      <div className="flex justify-content-center align-items-center">
+      <div className="flex justify-content-center align-middle mt-[20%]">
         <ProgressSpinner />
       </div>
     ) : (
@@ -79,7 +81,7 @@ function App() {
         onSelectionChange={(e) => setSelectedProducts(e.value)} // Update selected rows on change
         dataKey="id" // Use 'id' as the unique key for each row
       >
-        <Column selectionMode="multiple" headerStyle={{ width: '3em' }}></Column> {/* Checkbox column */}
+        <Column selectionMode="multiple" headerStyle={{ width: '3em' }} className=''></Column> {/* Checkbox column */}
         <Column field="title" header="Title" style={{ width: '20%' }}></Column>
         <Column field="place_of_origin" header="Place of Origin" style={{ width: '10%' }}></Column>
         <Column field="artist_display" header="Artist Display" style={{ width: '25%' }}></Column>
