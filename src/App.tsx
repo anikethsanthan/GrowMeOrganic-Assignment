@@ -58,14 +58,7 @@ function App() {
 
   return (
     <div>
-      <div className="flex justify-content-center align-items-center mb-4 gap-2">
-        <InputSwitch 
-          inputId="input-rowclick" 
-          checked={rowClick} 
-          onChange={(e: InputSwitchChangeEvent) => setRowClick(e.value!)} 
-        />
-        <label htmlFor="input-rowclick">Row Click</label>
-      </div>
+      
 
       {loading ? (
       <div className="flex justify-content-center align-items-center">
