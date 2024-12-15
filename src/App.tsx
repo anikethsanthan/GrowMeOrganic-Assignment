@@ -144,6 +144,7 @@ function App() {
             selection={getSelectedArtworks()} 
             onSelectionChange={onSelectionChange} 
             dataKey="id"
+            selectionMode="multiple"
           >
             <Column selectionMode="multiple" headerStyle={{ width: '3em' }}></Column>
             <Column field="title" header="Title" style={{ width: '20%' }}></Column>
