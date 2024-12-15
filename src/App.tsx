@@ -2,6 +2,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useState, useEffect } from 'react';
 import { InputSwitch, InputSwitchChangeEvent } from 'primereact/inputswitch';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 // Define the structure for the API data
 interface Artwork {
@@ -19,9 +20,12 @@ function App() {
   const [selectedPage, setSelectedPage] = useState(0); // State to track the current page
   const [selectedProducts, setSelectedProducts] = useState<Artwork[] | null>(null);
   const [rowClick, setRowClick] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false); // State to track loading
+
 
   // Fetch data from the API
   const fetchArtworks = async () => {
+    setLoading(true); 
     try {
       const response = await fetch(`https://api.artic.edu/api/v1/artworks?page=${selectedPage + 1}`);
       const json = await response.json();
@@ -37,6 +41,8 @@ function App() {
       setArtworks(fetchedArtworks);
     } catch (error) {
       console.error("Error fetching artworks:", error);
+    }finally {
+      setLoading(false); // Set loading to false after fetching is complete (either success or failure)
     }
   };
 
@@ -61,6 +67,11 @@ function App() {
         <label htmlFor="input-rowclick">Row Click</label>
       </div>
 
+      {loading ? (
+      <div className="flex justify-content-center align-items-center">
+        <ProgressSpinner />
+      </div>
+    ) : (
       <DataTable
         value={artworks}
         paginator
@@ -83,6 +94,7 @@ function App() {
         <Column field="date_start" header="Date Start" style={{ width: '5%' }}></Column>
         <Column field="date_end" header="Date End" style={{ width: '5%' }}></Column>
       </DataTable>
+    )}
     </div>
   );
 }
