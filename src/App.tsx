@@ -27,8 +27,8 @@ function App() {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [selectedPage, setSelectedPage] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [inputValue, setInputValue] = useState<number | "">(""); // To store input value
-  const [totalFetchedArtworks, setTotalFetchedArtworks] = useState<Artwork[]>([]); // Cumulative artworks
+  const [inputValue, setInputValue] = useState<number | "">(""); 
+  const [totalFetchedArtworks, setTotalFetchedArtworks] = useState<Artwork[]>([]); 
 
   const op = useRef<OverlayPanel>(null);
 
@@ -61,7 +61,7 @@ function App() {
   const loadInitialPage = async () => {
     const fetchedArtworks = await fetchArtworks(selectedPage + 1);
     setArtworks(fetchedArtworks);
-    setTotalFetchedArtworks(fetchedArtworks); // Initialize cumulative artworks
+    setTotalFetchedArtworks(fetchedArtworks); 
   };
 
   useEffect(() => {
@@ -70,7 +70,7 @@ function App() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setInputValue(value === "" ? "" : Math.max(0, parseInt(value))); // Ensure non-negative integers
+    setInputValue(value === "" ? "" : Math.max(0, parseInt(value)));
   };
 
   const handleInputSubmit = async () => {
@@ -78,18 +78,18 @@ function App() {
       let requiredArtworks = [...totalFetchedArtworks];
       let currentPage = selectedPage + 1;
 
-      // Fetch additional pages until we have enough artworks
+     
       while (requiredArtworks.length < inputValue) {
         currentPage++;
         const additionalArtworks = await fetchArtworks(currentPage);
-        if (additionalArtworks.length === 0) break; // Stop if no more artworks
+        if (additionalArtworks.length === 0) break; 
         requiredArtworks = [...requiredArtworks, ...additionalArtworks];
       }
 
-      // Select the required number of artworks
+     
       const idsToSelect = requiredArtworks.slice(0, inputValue).map((artwork) => artwork.id);
-      dispatch(setSelections(idsToSelect)); // Update Redux store with selected IDs
-      setTotalFetchedArtworks(requiredArtworks); // Update cumulative artworks
+      dispatch(setSelections(idsToSelect)); 
+      setTotalFetchedArtworks(requiredArtworks); 
     }
   };
 
@@ -99,7 +99,7 @@ function App() {
 
   const onSelectionChange = (e: any) => {
     const selectedIds = e.value.map((item: Artwork) => item.id);
-    dispatch(setSelections(selectedIds)); // Update Redux store with selected IDs
+    dispatch(setSelections(selectedIds)); 
   };
 
   const getSelectedArtworks = () => {
@@ -141,8 +141,8 @@ function App() {
             onPage={onPageChange}
             totalRecords={500}
             lazy
-            selection={getSelectedArtworks()} // Dynamically compute selected rows
-            onSelectionChange={onSelectionChange} // Update selected rows
+            selection={getSelectedArtworks()} 
+            onSelectionChange={onSelectionChange} 
             dataKey="id"
           >
             <Column selectionMode="multiple" headerStyle={{ width: '3em' }}></Column>
