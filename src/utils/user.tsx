@@ -16,10 +16,10 @@ const artworkSlice = createSlice({
     toggleSelection: (state, action: PayloadAction<number>) => {
       const id = action.payload;
       if (state.selectedArtworks.includes(id)) {
-        // Remove if already selected
+        
         state.selectedArtworks = state.selectedArtworks.filter((artworkId) => artworkId !== id);
       } else {
-        // Add if not selected
+        
         state.selectedArtworks.push(id);
       }
     },
