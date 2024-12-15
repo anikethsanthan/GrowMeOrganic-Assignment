@@ -1,7 +1,6 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useState, useEffect } from 'react';
-import { InputSwitch, InputSwitchChangeEvent } from 'primereact/inputswitch';
 import { ProgressSpinner } from 'primereact/progressspinner';
 
 // Define the structure for the API data
@@ -19,7 +18,6 @@ function App() {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [selectedPage, setSelectedPage] = useState(0); 
   const [selectedProducts, setSelectedProducts] = useState<Artwork[] | null>(null);
-  const [rowClick, setRowClick] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false); 
 
 
@@ -76,7 +74,6 @@ function App() {
         onPage={onPageChange} 
         totalRecords={500} 
         lazy 
-        selectionMode={rowClick ? undefined : 'multiple'} // Toggle between single and multiple selection
         selection={selectedProducts} // Bind the selected rows to the state
         onSelectionChange={(e) => setSelectedProducts(e.value)} // Update selected rows on change
         dataKey="id" // Use 'id' as the unique key for each row

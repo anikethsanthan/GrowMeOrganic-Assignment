@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
 .p-checkbox input:checked ~ .p-checkbox-box {
     background-color: #3b82f6; 
     border-color: #3b82f6; 
