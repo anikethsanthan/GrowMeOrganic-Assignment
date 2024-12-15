@@ -1,6 +1,6 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { Button } from 'primereact/button';
@@ -17,6 +17,16 @@ interface Artwork {
   date_end: number | null;
 }
 
+interface ArtworkAPIResponse {
+  id: number;
+  title: string;
+  place_of_origin?: string;
+  artist_display?: string;
+  inscriptions?: string;
+  date_start?: number;
+  date_end?: number;
+}
+
 interface RootState {
   artworks: {
     selectedArtworks: number[];
@@ -27,8 +37,8 @@ function App() {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [selectedPage, setSelectedPage] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [inputValue, setInputValue] = useState<number | "">(""); 
-  const [totalFetchedArtworks, setTotalFetchedArtworks] = useState<Artwork[]>([]); 
+  const [inputValue, setInputValue] = useState<number | "">("");
+  const [totalFetchedArtworks, setTotalFetchedArtworks] = useState<Artwork[]>([]);
 
   const op = useRef<OverlayPanel>(null);
 
@@ -40,7 +50,7 @@ function App() {
     try {
       const response = await fetch(`https://api.artic.edu/api/v1/artworks?page=${page}`);
       const json = await response.json();
-      const fetchedArtworks = json.data.map((item: any) => ({
+      const fetchedArtworks = json.data.map((item: ArtworkAPIResponse) => ({
         id: item.id,
         title: item.title,
         place_of_origin: item.place_of_origin || "Unknown",
@@ -58,19 +68,20 @@ function App() {
     }
   };
 
-  const loadInitialPage = async () => {
+  const loadInitialPage = useCallback(async () => {
     const fetchedArtworks = await fetchArtworks(selectedPage + 1);
     setArtworks(fetchedArtworks);
-    setTotalFetchedArtworks(fetchedArtworks); 
-  };
+    setTotalFetchedArtworks(fetchedArtworks);
+  }, [selectedPage]);
 
   useEffect(() => {
     loadInitialPage();
-  }, [selectedPage]);
+  }, [loadInitialPage]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setInputValue(value === "" ? "" : Math.max(0, parseInt(value)));
+    const parsedValue = parseInt(value);
+    setInputValue(value === "" || isNaN(parsedValue) ? "" : Math.max(0, parsedValue));
   };
 
   const handleInputSubmit = async () => {
@@ -78,28 +89,26 @@ function App() {
       let requiredArtworks = [...totalFetchedArtworks];
       let currentPage = selectedPage + 1;
 
-     
       while (requiredArtworks.length < inputValue) {
         currentPage++;
         const additionalArtworks = await fetchArtworks(currentPage);
-        if (additionalArtworks.length === 0) break; 
+        if (additionalArtworks.length === 0) break;
         requiredArtworks = [...requiredArtworks, ...additionalArtworks];
       }
 
-     
       const idsToSelect = requiredArtworks.slice(0, inputValue).map((artwork) => artwork.id);
-      dispatch(setSelections(idsToSelect)); 
-      setTotalFetchedArtworks(requiredArtworks); 
+      dispatch(setSelections(idsToSelect));
+      setTotalFetchedArtworks(requiredArtworks);
     }
   };
 
-  const onPageChange = (event: any) => {
+  const onPageChange = (event: { first: number; rows: number }) => {
     setSelectedPage(event.first / event.rows);
   };
 
-  const onSelectionChange = (e: any) => {
+  const onSelectionChange = (e: { value: Artwork[] }) => {
     const selectedIds = e.value.map((item: Artwork) => item.id);
-    dispatch(setSelections(selectedIds)); 
+    dispatch(setSelections(selectedIds));
   };
 
   const getSelectedArtworks = () => {
@@ -115,9 +124,11 @@ function App() {
       ) : (
         <>
           <div className="card flex justify-content-center mb-4">
-          <i  onClick={(e) => op.current?.toggle(e)} 
-          className=" cursor-pointer absolute top-[3rem] left-[5.25rem] z-10  w-4 fa-solid fa-caret-down"></i>
-            
+            <i
+              onClick={(e) => op.current?.toggle(e)}
+              className="cursor-pointer absolute top-[3rem] left-[5.25rem] z-10 w-4 fa-solid fa-caret-down"
+            ></i>
+
             <OverlayPanel ref={op}>
               <div className="p-3">
                 <input
@@ -137,22 +148,22 @@ function App() {
             paginator
             rows={12}
             rowsPerPageOptions={[5, 10, 25, 50]}
-            tableStyle={{ minWidth: '50rem' }}
+            tableStyle={{ minWidth: "50rem" }}
             onPage={onPageChange}
             totalRecords={500}
             lazy
-            selection={getSelectedArtworks()} 
-            onSelectionChange={onSelectionChange} 
+            selection={getSelectedArtworks()}
+            onSelectionChange={onSelectionChange}
             dataKey="id"
             selectionMode="multiple"
           >
-            <Column selectionMode="multiple" headerStyle={{ width: '3em' }}></Column>
-            <Column field="title" header="Title" style={{ width: '20%' }}></Column>
-            <Column field="place_of_origin" header="Place of Origin" style={{ width: '10%' }}></Column>
-            <Column field="artist_display" header="Artist Display" style={{ width: '25%' }}></Column>
-            <Column field="inscriptions" header="Inscriptions" style={{ width: '25%' }}></Column>
-            <Column field="date_start" header="Date Start" style={{ width: '5%' }}></Column>
-            <Column field="date_end" header="Date End" style={{ width: '5%' }}></Column>
+            <Column selectionMode="multiple" headerStyle={{ width: "3em" }}></Column>
+            <Column field="title" header="Title" style={{ width: "20%" }}></Column>
+            <Column field="place_of_origin" header="Place of Origin" style={{ width: "10%" }}></Column>
+            <Column field="artist_display" header="Artist Display" style={{ width: "25%" }}></Column>
+            <Column field="inscriptions" header="Inscriptions" style={{ width: "25%" }}></Column>
+            <Column field="date_start" header="Date Start" style={{ width: "5%" }}></Column>
+            <Column field="date_end" header="Date End" style={{ width: "5%" }}></Column>
           </DataTable>
         </>
       )}
@@ -160,4 +171,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;  
