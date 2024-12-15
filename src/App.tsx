@@ -115,12 +115,9 @@ function App() {
       ) : (
         <>
           <div className="card flex justify-content-center mb-4">
-            <Button
-              type="button"
-              icon="pi pi-image"
-              label=">"
-              onClick={(e) => op.current?.toggle(e)}
-            />
+          <i  onClick={(e) => op.current?.toggle(e)} 
+          className=" cursor-pointer absolute top-[3rem] left-[5.25rem] z-10  w-4 fa-solid fa-caret-down"></i>
+            
             <OverlayPanel ref={op}>
               <div className="p-3">
                 <input
