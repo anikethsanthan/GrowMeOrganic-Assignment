@@ -1,6 +1,6 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { Button } from 'primereact/button';
@@ -68,15 +68,15 @@ function App() {
     }
   };
 
-  const loadInitialPage = useCallback(async () => {
-    const fetchedArtworks = await fetchArtworks(selectedPage + 1);
-    setArtworks(fetchedArtworks);
-    setTotalFetchedArtworks(fetchedArtworks);
-  }, [selectedPage]);
-
   useEffect(() => {
+    const loadInitialPage = async () => {
+      const fetchedArtworks = await fetchArtworks(selectedPage + 1);
+      setArtworks(fetchedArtworks);
+      setTotalFetchedArtworks(fetchedArtworks);
+    };
+
     loadInitialPage();
-  }, [loadInitialPage]);
+  }, [selectedPage]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -171,4 +171,4 @@ function App() {
   );
 }
 
-export default App;  
+export default App;
