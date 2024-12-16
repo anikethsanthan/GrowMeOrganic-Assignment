@@ -1,31 +1,12 @@
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { useState, useEffect, useRef } from 'react';
-import { ProgressSpinner } from 'primereact/progressspinner';
-import { OverlayPanel } from 'primereact/overlaypanel';
-import { Button } from 'primereact/button';
+import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setSelections } from "./utils/user";
-
-interface Artwork {
-  id: number;
-  title: string;
-  place_of_origin: string | null;
-  artist_display: string | null;
-  inscriptions: string | null;
-  date_start: number | null;
-  date_end: number | null;
-}
-
-interface ArtworkAPIResponse {
-  id: number;
-  title: string;
-  place_of_origin?: string;
-  artist_display?: string;
-  inscriptions?: string;
-  date_start?: number;
-  date_end?: number;
-}
+import { fetchArtworks, Artwork } from "./Data";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { OverlayPanel } from "primereact/overlaypanel";
+import { Button } from "primereact/button";
 
 interface RootState {
   artworks: {
@@ -41,41 +22,19 @@ function App() {
   const [totalFetchedArtworks, setTotalFetchedArtworks] = useState<Artwork[]>([]);
 
   const op = useRef<OverlayPanel>(null);
-
   const dispatch = useDispatch();
   const selectedArtworks = useSelector((state: RootState) => state.artworks.selectedArtworks);
 
-  const fetchArtworks = async (page: number) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`https://api.artic.edu/api/v1/artworks?page=${page}`);
-      const json = await response.json();
-      const fetchedArtworks = json.data.map((item: ArtworkAPIResponse) => ({
-        id: item.id,
-        title: item.title,
-        place_of_origin: item.place_of_origin || "Unknown",
-        artist_display: item.artist_display || "Not Available",
-        inscriptions: item.inscriptions || "None",
-        date_start: item.date_start,
-        date_end: item.date_end,
-      }));
-      return fetchedArtworks;
-    } catch (error) {
-      console.error("Error fetching artworks:", error);
-      return [];
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    const loadInitialPage = async () => {
+    const loadArtworks = async () => {
+      setLoading(true);
       const fetchedArtworks = await fetchArtworks(selectedPage + 1);
       setArtworks(fetchedArtworks);
       setTotalFetchedArtworks(fetchedArtworks);
+      setLoading(false);
     };
-
-    loadInitialPage();
+    loadArtworks();
   }, [selectedPage]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
